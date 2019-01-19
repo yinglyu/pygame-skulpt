@@ -308,12 +308,12 @@ def runGame():
         pygame.display.update()
         FPSCLOCK.tick(FPS)
         
-
+#创建文本对象
 def makeTextObjs(text, font, color):
     surf = font.render(text, True, color)
     return surf, surf.get_rect()
 
-
+#结束处理
 def terminate():
     pygame.quit()
 
@@ -323,38 +323,40 @@ def checkForKeyPress():
     # Go through event queue looking for a KEYUP event.
     # Grab KEYDOWN events to remove them from the event queue.
     checkForQuit()
-
-    for event in pygame.event.get([KEYDOWN, KEYUP]):
+'''
+    for event in pygame.event.get([pygame.KEYDOWN, pygame.KEYUP]):
         if event.type == pygame.KEYDOWN:
             continue
         return event.key
     return None
-
+'''
 
 def showTextScreen(text):
     # This function displays large text in the
     # center of the screen until a key is pressed.
-    '''
+    
     # Draw the text drop shadow
     titleSurf, titleRect = makeTextObjs(text, BIGFONT, TEXTSHADOWCOLOR)
     titleRect.center = (int(WINDOWWIDTH / 2), int(WINDOWHEIGHT / 2))
-    DISPLAYSURF.blit(titleSurf, titleRect)
+    DISPLAYSURF.blit(titleSurf, titleRect.center)
 
     # Draw the text
     titleSurf, titleRect = makeTextObjs(text, BIGFONT, TEXTCOLOR)
     titleRect.center = (int(WINDOWWIDTH / 2) - 3, int(WINDOWHEIGHT / 2) - 3)
-    DISPLAYSURF.blit(titleSurf, titleRect)
+    DISPLAYSURF.blit(titleSurf, titleRect.center)
 
     # Draw the additional "Press a key to play." text.
     pressKeySurf, pressKeyRect = makeTextObjs('Press a key to play.', BASICFONT, TEXTCOLOR)
     pressKeyRect.center = (int(WINDOWWIDTH / 2), int(WINDOWHEIGHT / 2) + 100)
-    DISPLAYSURF.blit(pressKeySurf, pressKeyRect)
-
+    DISPLAYSURF.blit(pressKeySurf, pressKeyRect.center)
+    
+    '''
     while checkForKeyPress() == None:
         pygame.display.update()
         FPSCLOCK.tick()
     '''
-
+    
+#检查是否为结束状态
 def checkForQuit():
     
     for event in pygame.event.get(pygame.QUIT): # get all the QUIT events
@@ -370,6 +372,7 @@ def checkForQuit():
         #pygame.event.post(event) # put the other KEYUP event objects back
         
     '''
+#计算等级以及对应的下降速度
 def calculateLevelAndFallFreq(score):
     # Based on the score, return the level the player is on and
     # how many seconds pass until a falling piece falls one space.
@@ -377,6 +380,7 @@ def calculateLevelAndFallFreq(score):
     fallFreq = 0.27 - (level * 0.02)
     return level, fallFreq
 
+#生成新的形状
 def getNewPiece():
     # return a random new piece in a random rotation and color
     shape = random.choice(list(PIECES.keys()))
@@ -387,7 +391,7 @@ def getNewPiece():
                 'color': random.randint(0, len(COLORS)-1)}
     return newPiece
 
-
+#将形状加入游戏区域
 def addToBoard(board, piece):
     # fill in the board based on piece's location, shape, and rotation
     for x in range(TEMPLATEWIDTH):
@@ -395,7 +399,7 @@ def addToBoard(board, piece):
             if PIECES[piece['shape']][piece['rotation']][y][x] != BLANK:
                 board[x + piece['x']][y + piece['y']] = piece['color']
 
-
+#创建空的游戏区域 数据结构
 def getBlankBoard():
     # create and return a new blank board data structure
     board = []
@@ -403,11 +407,11 @@ def getBlankBoard():
         board.append([BLANK] * BOARDHEIGHT)
     return board
 
-
+#判断形状在游戏区域内
 def isOnBoard(x, y):
     return x >= 0 and x < BOARDWIDTH and y < BOARDHEIGHT
 
-
+#判断形状的位置是否合法
 def isValidPosition(board, piece, adjX=0, adjY=0):
     # Return True if the piece is within the board and not colliding
     for x in range(TEMPLATEWIDTH):
@@ -420,7 +424,7 @@ def isValidPosition(board, piece, adjX=0, adjY=0):
             if board[x + piece['x'] + adjX][y + piece['y'] + adjY] != BLANK:
                 return False
     return True
-
+#判断一行填满
 def isCompleteLine(board, y):
     # Return True if the line filled with boxes with no gaps.
     for x in range(BOARDWIDTH):
@@ -428,7 +432,7 @@ def isCompleteLine(board, y):
             return False
     return True
 
-
+#消除填满的行
 def removeCompleteLines(board):
     # Remove any completed lines on the board, move everything above them down, and return the number of complete lines.
     numLinesRemoved = 0
@@ -450,13 +454,13 @@ def removeCompleteLines(board):
             y -= 1 # move on to check next row up
     return numLinesRemoved
 
-
+#像素转换
 def convertToPixelCoords(boxx, boxy):
     # Convert the given xy coordinates of the board to xy
     # coordinates of the location on the screen.
     return (XMARGIN + (boxx * BOXSIZE)), (TOPMARGIN + (boxy * BOXSIZE))
 
-
+#画组成形状的格子
 def drawBox(boxx, boxy, color, pixelx=None, pixely=None):
     # draw a single box (each tetromino piece has four boxes)
     # at xy coordinates on the board. Or, if pixelx & pixely
@@ -469,7 +473,7 @@ def drawBox(boxx, boxy, color, pixelx=None, pixely=None):
     pygame.draw.rect(DISPLAYSURF, COLORS[color], (pixelx + 1, pixely + 1, BOXSIZE - 1, BOXSIZE - 1))
     pygame.draw.rect(DISPLAYSURF, LIGHTCOLORS[color], (pixelx + 1, pixely + 1, BOXSIZE - 4, BOXSIZE - 4))
 
-
+#画出游戏区域
 def drawBoard(board):
     # draw the border around the board
     pygame.draw.rect(DISPLAYSURF, BORDERCOLOR, (XMARGIN - 3, TOPMARGIN - 7, (BOARDWIDTH * BOXSIZE) + 8, (BOARDHEIGHT * BOXSIZE) + 8), 5)
@@ -481,7 +485,7 @@ def drawBoard(board):
         for y in range(BOARDHEIGHT):
             drawBox(x, y, board[x][y])
 
-
+#显示得分等级信息
 def drawStatus(score, level):
     # draw the score text
     
@@ -496,7 +500,7 @@ def drawStatus(score, level):
     levelRect.topleft = (WINDOWWIDTH - 150, 50)
     DISPLAYSURF.blit(levelSurf, levelRect.topleft)
     
-
+#画出形状
 def drawPiece(piece, pixelx=None, pixely=None):
     shapeToDraw = PIECES[piece['shape']][piece['rotation']]
     if pixelx == None and pixely == None:
@@ -509,7 +513,7 @@ def drawPiece(piece, pixelx=None, pixely=None):
             if shapeToDraw[y][x] != BLANK:
                 drawBox(None, None, piece['color'], pixelx + (x * BOXSIZE), pixely + (y * BOXSIZE))
 
-
+#画出下一个形状的提醒
 def drawNextPiece(piece):
     # draw the "next" text
     nextSurf = BASICFONT.render('Next:', True, TEXTCOLOR)
