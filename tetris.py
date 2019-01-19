@@ -484,18 +484,18 @@ def drawBoard(board):
 
 def drawStatus(score, level):
     # draw the score text
-    '''
+    
     scoreSurf = BASICFONT.render('Score: %s' % score, True, TEXTCOLOR)
     scoreRect = scoreSurf.get_rect()
     scoreRect.topleft = (WINDOWWIDTH - 150, 20)
-    DISPLAYSURF.blit(scoreSurf, scoreRect)
+    DISPLAYSURF.blit(scoreSurf, scoreRect.topleft)
 
     # draw the level text
     levelSurf = BASICFONT.render('Level: %s' % level, True, TEXTCOLOR)
     levelRect = levelSurf.get_rect()
     levelRect.topleft = (WINDOWWIDTH - 150, 50)
-    DISPLAYSURF.blit(levelSurf, levelRect)
-    '''
+    DISPLAYSURF.blit(levelSurf, levelRect.topleft)
+    
 
 def drawPiece(piece, pixelx=None, pixely=None):
     shapeToDraw = PIECES[piece['shape']][piece['rotation']]
@@ -511,17 +511,15 @@ def drawPiece(piece, pixelx=None, pixely=None):
 
 
 def drawNextPiece(piece):
-    '''
     # draw the "next" text
     nextSurf = BASICFONT.render('Next:', True, TEXTCOLOR)
     nextRect = nextSurf.get_rect()
     nextRect.topleft = (WINDOWWIDTH - 120, 80)
-    DISPLAYSURF.blit(nextSurf, nextRect)
-    '''
+    DISPLAYSURF.blit(nextSurf, nextRect.topleft)
+    
     # draw the "next" piece
     drawPiece(piece, pixelx=WINDOWWIDTH-120, pixely=100)
     
-
 
 if __name__ == '__main__':
     main()
