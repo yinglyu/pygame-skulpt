@@ -1,10 +1,12 @@
+#俄罗斯方块
+
 # Tetromino (a Tetris clone)
 # By Al Sweigart al@inventwithpython.com
 # http://inventwithpython.com/pygame
 # Released under a "Simplified BSD" license
 
-import random, time, pygame, sys
-from pygame.locals import *
+import random, time, pygame
+
 
 FPS = 25
 WINDOWWIDTH = 640
@@ -165,14 +167,19 @@ def main():
     pygame.display.set_caption('Tetromino')
 
     showTextScreen('Tetromino')
+    
     while True: # game loop
+        '''
         if random.randint(0, 1) == 0:
             pygame.mixer.music.load('tetrisb.mid')
         else:
             pygame.mixer.music.load('tetrisc.mid')
         pygame.mixer.music.play(-1, 0.0)
+        '''
         runGame()
+        '''
         pygame.mixer.music.stop()
+        '''
         showTextScreen('Game Over')
 
 
@@ -188,7 +195,7 @@ def runGame():
     score = 0
     level, fallFreq = calculateLevelAndFallFreq(score)
 
-    fallingPiece = getNewPiece()
+    fallingPiece = getNewPiece()    
     nextPiece = getNewPiece()
 
     while True: # game loop
@@ -200,11 +207,12 @@ def runGame():
 
             if not isValidPosition(board, fallingPiece):
                 return # can't fit a new piece on the board, so game over
-
+        
         checkForQuit()
+        
         for event in pygame.event.get(): # event handling loop
-            if event.type == KEYUP:
-                if (event.key == K_p):
+            if event.type == pygame.KEYUP:
+                if (event.key == pygame.K_p):
                     # Pausing the game
                     DISPLAYSURF.fill(BGCOLOR)
                     pygame.mixer.music.stop()
@@ -213,46 +221,48 @@ def runGame():
                     lastFallTime = time.time()
                     lastMoveDownTime = time.time()
                     lastMoveSidewaysTime = time.time()
-                elif (event.key == K_LEFT or event.key == K_a):
+                elif (event.key == pygame.K_LEFT or event.key == pygame.K_a):
                     movingLeft = False
-                elif (event.key == K_RIGHT or event.key == K_d):
+                elif (event.key == pygame.K_RIGHT or event.key == pygame.K_d):
                     movingRight = False
-                elif (event.key == K_DOWN or event.key == K_s):
+                elif (event.key == pygame.K_DOWN or event.key == pygame.K_s):
                     movingDown = False
 
-            elif event.type == KEYDOWN:
+            elif event.type == pygame.KEYDOWN:
                 # moving the piece sideways
-                if (event.key == K_LEFT or event.key == K_a) and isValidPosition(board, fallingPiece, adjX=-1):
+                if event.key == pygame.K_ESCAPE: #ying
+                    terminate()
+                elif (event.key == pygame.K_LEFT or event.key == pygame.K_a) and isValidPosition(board, fallingPiece, adjX=-1):
                     fallingPiece['x'] -= 1
                     movingLeft = True
                     movingRight = False
                     lastMoveSidewaysTime = time.time()
 
-                elif (event.key == K_RIGHT or event.key == K_d) and isValidPosition(board, fallingPiece, adjX=1):
+                elif (event.key == pygame.K_RIGHT or event.key == pygame.K_d) and isValidPosition(board, fallingPiece, adjX=1):
                     fallingPiece['x'] += 1
                     movingRight = True
                     movingLeft = False
                     lastMoveSidewaysTime = time.time()
 
                 # rotating the piece (if there is room to rotate)
-                elif (event.key == K_UP or event.key == K_w):
+                elif (event.key == pygame.K_UP or event.key == pygame.K_w):
                     fallingPiece['rotation'] = (fallingPiece['rotation'] + 1) % len(PIECES[fallingPiece['shape']])
                     if not isValidPosition(board, fallingPiece):
                         fallingPiece['rotation'] = (fallingPiece['rotation'] - 1) % len(PIECES[fallingPiece['shape']])
-                elif (event.key == K_q): # rotate the other direction
+                elif (event.key == pygame.K_q): # rotate the other direction
                     fallingPiece['rotation'] = (fallingPiece['rotation'] - 1) % len(PIECES[fallingPiece['shape']])
                     if not isValidPosition(board, fallingPiece):
                         fallingPiece['rotation'] = (fallingPiece['rotation'] + 1) % len(PIECES[fallingPiece['shape']])
 
                 # making the piece fall faster with the down key
-                elif (event.key == K_DOWN or event.key == K_s):
+                elif (event.key == pygame.K_DOWN or event.key == pygame.K_s):
                     movingDown = True
                     if isValidPosition(board, fallingPiece, adjY=1):
                         fallingPiece['y'] += 1
                     lastMoveDownTime = time.time()
 
                 # move the current piece all the way down
-                elif event.key == K_SPACE:
+                elif event.key == pygame.K_SPACE:
                     movingDown = False
                     movingLeft = False
                     movingRight = False
@@ -260,7 +270,7 @@ def runGame():
                         if not isValidPosition(board, fallingPiece, adjY=i):
                             break
                     fallingPiece['y'] += i - 1
-
+        
         # handle moving the piece because of user input
         if (movingLeft or movingRight) and time.time() - lastMoveSidewaysTime > MOVESIDEWAYSFREQ:
             if movingLeft and isValidPosition(board, fallingPiece, adjX=-1):
@@ -268,11 +278,11 @@ def runGame():
             elif movingRight and isValidPosition(board, fallingPiece, adjX=1):
                 fallingPiece['x'] += 1
             lastMoveSidewaysTime = time.time()
-
+        
         if movingDown and time.time() - lastMoveDownTime > MOVEDOWNFREQ and isValidPosition(board, fallingPiece, adjY=1):
             fallingPiece['y'] += 1
             lastMoveDownTime = time.time()
-
+        
         # let the piece fall if it is time to fall
         if time.time() - lastFallTime > fallFreq:
             # see if the piece has landed
@@ -286,7 +296,7 @@ def runGame():
                 # piece did not land, just move the piece down
                 fallingPiece['y'] += 1
                 lastFallTime = time.time()
-
+        
         # drawing everything on the screen
         DISPLAYSURF.fill(BGCOLOR)
         drawBoard(board)
@@ -294,10 +304,10 @@ def runGame():
         drawNextPiece(nextPiece)
         if fallingPiece != None:
             drawPiece(fallingPiece)
-
+        
         pygame.display.update()
         FPSCLOCK.tick(FPS)
-
+        
 
 def makeTextObjs(text, font, color):
     surf = font.render(text, True, color)
@@ -306,7 +316,7 @@ def makeTextObjs(text, font, color):
 
 def terminate():
     pygame.quit()
-    sys.exit()
+
 
 
 def checkForKeyPress():
@@ -315,7 +325,7 @@ def checkForKeyPress():
     checkForQuit()
 
     for event in pygame.event.get([KEYDOWN, KEYUP]):
-        if event.type == KEYDOWN:
+        if event.type == pygame.KEYDOWN:
             continue
         return event.key
     return None
@@ -324,6 +334,7 @@ def checkForKeyPress():
 def showTextScreen(text):
     # This function displays large text in the
     # center of the screen until a key is pressed.
+    '''
     # Draw the text drop shadow
     titleSurf, titleRect = makeTextObjs(text, BIGFONT, TEXTSHADOWCOLOR)
     titleRect.center = (int(WINDOWWIDTH / 2), int(WINDOWHEIGHT / 2))
@@ -342,17 +353,23 @@ def showTextScreen(text):
     while checkForKeyPress() == None:
         pygame.display.update()
         FPSCLOCK.tick()
-
+    '''
 
 def checkForQuit():
-    for event in pygame.event.get(QUIT): # get all the QUIT events
+    
+    for event in pygame.event.get(pygame.QUIT): # get all the QUIT events
+        
         terminate() # terminate if any QUIT events are present
-    for event in pygame.event.get(KEYUP): # get all the KEYUP events
-        if event.key == K_ESCAPE:
+        
+    
+    '''
+    for event in pygame.event.get(pygame.KEYUP): # get all the KEYUP events
+        if event.key == pygame.K_ESCAPE:
             terminate() # terminate if the KEYUP event was for the Esc key
-        pygame.event.post(event) # put the other KEYUP event objects back
-
-
+        
+        #pygame.event.post(event) # put the other KEYUP event objects back
+        
+    '''
 def calculateLevelAndFallFreq(score):
     # Based on the score, return the level the player is on and
     # how many seconds pass until a falling piece falls one space.
@@ -467,6 +484,7 @@ def drawBoard(board):
 
 def drawStatus(score, level):
     # draw the score text
+    '''
     scoreSurf = BASICFONT.render('Score: %s' % score, True, TEXTCOLOR)
     scoreRect = scoreSurf.get_rect()
     scoreRect.topleft = (WINDOWWIDTH - 150, 20)
@@ -477,7 +495,7 @@ def drawStatus(score, level):
     levelRect = levelSurf.get_rect()
     levelRect.topleft = (WINDOWWIDTH - 150, 50)
     DISPLAYSURF.blit(levelSurf, levelRect)
-
+    '''
 
 def drawPiece(piece, pixelx=None, pixely=None):
     shapeToDraw = PIECES[piece['shape']][piece['rotation']]
@@ -493,13 +511,16 @@ def drawPiece(piece, pixelx=None, pixely=None):
 
 
 def drawNextPiece(piece):
+    '''
     # draw the "next" text
     nextSurf = BASICFONT.render('Next:', True, TEXTCOLOR)
     nextRect = nextSurf.get_rect()
     nextRect.topleft = (WINDOWWIDTH - 120, 80)
     DISPLAYSURF.blit(nextSurf, nextRect)
+    '''
     # draw the "next" piece
     drawPiece(piece, pixelx=WINDOWWIDTH-120, pixely=100)
+    
 
 
 if __name__ == '__main__':
