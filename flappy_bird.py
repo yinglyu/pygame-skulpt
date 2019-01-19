@@ -1,4 +1,5 @@
 #Flappy Bird
+#pygame4skulpt
 
 import pygame as pg
 from random import randint
@@ -102,7 +103,9 @@ while True:
         disp.blit(f.render(str(point), False, pg.Color("green")), (13 * side, 3 * side))
         pg.display.update()
         game_running = 3
-        
+    #游戏运行状态为2，终止循环
+    if game_running == 3:
+        continue  
     #小鸟方向不为0时，进行自由落体
     if bird_dirs != 0:
         #小鸟方向3为向上

@@ -1,5 +1,4 @@
 #贪吃蛇
-#snake.py
 
 import pygame as pg
 from random import randint
@@ -12,10 +11,13 @@ disp = pg.display.set_mode((w * side, h * side))
 
 game_running = 0
 
+#设置方向对应的反应
+
 dirs = [pg.K_RIGHT, pg.K_DOWN, pg.K_LEFT, pg.K_UP]
 dx = [1, 0, -1, 0]
 dy = [0, 1, 0, -1]
 snake = [(7, 3), (7, 4)]
+
 direction = 0
 
 
@@ -29,7 +31,8 @@ def place_apple():
 apple = place_apple()
 
 
-def check_collisions():
+def check_collisions(): 
+#检查是否发生碰撞
     head = snake[-1]
     for i in range(len(snake) - 1):
         if head == snake[i]:
@@ -47,20 +50,20 @@ clock = pg.time.Clock()
 f = pg.font.SysFont('console', 24, True)
 
 while True:
-    clock.tick(8)
+    clock.tick(5)
     for e in pg.event.get():
-        if e.type == pg.QUIT:
+        if e.type == pg.QUIT:#按下esc停止
             pg.quit()
             break
         if e.type == pg.KEYDOWN:
             if game_running == 0:
                 game_runnig = 1
-            if e.key == pg.K_SPACE:
+            if e.key == pg.K_SPACE:#按下SPACE重启
                 game_running = 0
                 snake = [(7, 3), (7, 4)]
                 direction = 0
                 apple = place_apple()
-            for i in range(4):
+            for i in range(4):#按下方向键，可旋转90度
                 if e.key == dirs[i] and direction != (i + 2) % 4:
                     direction = i
     if game_running == 2:
@@ -70,7 +73,7 @@ while True:
         game_running = 3
     if game_running == 3:
         continue
-    snake.append((snake[-1][0] + dx[direction], snake[-1][1] + dy[direction]))
+    snake.append((snake[-1][0] + dx[direction], snake[-1][1] + dy[direction]))#蛇变形。。。
     coll = check_collisions()
     if coll >= 2:
         game_running = 2
@@ -83,5 +86,7 @@ while True:
     disp.fill(pg.Color("black"))
     for i in range(len(snake)):
         pg.draw.rect(disp, pg.Color("green"), pg.Rect(snake[i][0] * side, snake[i][1] * side, side, side))
+    for i in range(len(high_pillar)):
+        pg.draw.rect(disp, pg.Color("yellow"), pg.Rect(high_pillar[i][0] * side, high_pillar[i][1] * side, side, side))
     pg.draw.rect(disp, pg.Color("red"), pg.Rect(apple[0] * side, apple[1] * side, side, side))
     pg.display.update()

@@ -17,8 +17,6 @@ dirs = [pg.K_RIGHT, pg.K_DOWN, pg.K_LEFT, pg.K_UP]
 dx = [1, 0, -1, 0]
 dy = [0, 1, 0, -1]
 snake = [(7, 3), (7, 4)]
-bird = [(7,8),(8,8)]
-
 
 direction = 0
 
@@ -29,20 +27,9 @@ def place_apple():
         a = (randint(0, w - 1), randint(0, h - 1))
     return a
 
-def place_pillar():
-	crack_h = randint(1, h - 1 - 5)
-	#h_p = [(0, 16), (crack,16)]
-	#l_p = [(crack + 5, 16), (14,16)]
-	h_p = []
-	l_p = []
-	for i in range (0, crack)
-	    h_p.append((i, 16))
-	for i in range (crack + 5, 16)
-		l_p.append((i, 16))
-	return h_p, l_p
 
 apple = place_apple()
-high_pillar, low_pillar = place_pillar()
+
 
 def check_collisions(): 
 #检查是否发生碰撞
