@@ -2,7 +2,7 @@
 import pygame
 import random
 
-# Define some colors
+# 定义一些颜色
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 
@@ -27,12 +27,12 @@ def make_ball():
     Function to make a new, random ball.
     """
     ball = Ball()
-    # Starting position of the ball.
-    # Take into account the ball size so we don't spawn on the edge.
+    # 球的起始位置。
+    # 考虑到球的大小，所以我们不会在边缘放球。
     ball.x = random.randrange(BALL_SIZE, SCREEN_WIDTH - BALL_SIZE)
     ball.y = random.randrange(BALL_SIZE, SCREEN_HEIGHT - BALL_SIZE)
 
-    # Speed and direction of rectangle
+    #矩形的速度和方向
     ball.change_x = random.randrange(-2, 3)
     ball.change_y = random.randrange(-2, 3)
 
@@ -45,16 +45,16 @@ def main():
     """
     pygame.init()
 
-    # Set the height and width of the screen
+    # 设置屏幕的高度和宽度
     size = [SCREEN_WIDTH, SCREEN_HEIGHT]
     screen = pygame.display.set_mode(size)
 
     pygame.display.set_caption("Bouncing Balls")
 
-    # Loop until the user clicks the close button.
+    # 循环直到用户单击关闭按钮。
     done = False
 
-    # Used to manage how fast the screen updates
+    # 用于管理屏幕更新的速度
     clock = pygame.time.Clock()
 
     ball_list = []
@@ -62,46 +62,46 @@ def main():
     ball = make_ball()
     ball_list.append(ball)
 
-    # -------- Main Program Loop -----------
+    # -------- 主程序循环 -----------
     while not done:
-        # --- Event Processing
+        # --- 事件处理
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 done = True
             elif event.type == pygame.KEYDOWN:
-                # Space bar! Spawn a new ball.
+                # 空格键！产生一个新球。
                 if event.key == pygame.K_SPACE:
                     ball = make_ball()
                     ball_list.append(ball)
 
-        # --- Logic
+        # --- 逻辑
         for ball in ball_list:
-            # Move the ball's center
+            # 移动球的中心
             ball.x += ball.change_x
             ball.y += ball.change_y
 
-            # Bounce the ball if needed
+            # 如果需要，可以弹球
             if ball.y > SCREEN_HEIGHT - BALL_SIZE or ball.y < BALL_SIZE:
                 ball.change_y *= -1
             if ball.x > SCREEN_WIDTH - BALL_SIZE or ball.x < BALL_SIZE:
                 ball.change_x *= -1
 
-        # --- Drawing
-        # Set the screen background
+        #  --- 绘制
+        # 设置屏幕背景
         screen.fill(BLACK)
 
-        # Draw the balls
+        # 画球
         for ball in ball_list:
             pygame.draw.circle(screen, WHITE, [ball.x, ball.y], BALL_SIZE)
 
-        # --- Wrap-up
-        # Limit to 60 frames per second
+        # --- 封装
+        # 限制为每秒60帧
         clock.tick(60)
 
-        # Go ahead and update the screen with what we've drawn.
+        # 继续使用我们绘制的内容更新屏幕。
         pygame.display.flip()
 
-    # Close everything down
+    # 关闭所有内容
     pygame.quit()
 
 if __name__ == "__main__":
